@@ -3,7 +3,7 @@
 
 #include <Vector.h>
 
-const static int MAX_WIDTH = 10;  //BYTES
+const static int MAX_WIDTH = 4;  //BYTES
 const static int MAX_HEIGHT = 8; //LEDS
 
 
@@ -103,10 +103,10 @@ void ColDisplay::printDisplay (){
 
 void ColDisplay::updateLoop(){
   digitalWrite(13,LOW);
-   delay (500);
+   //delay (500);
 
    digitalWrite(13,HIGH);
-   delay(500);
+   //delay(500);
 
 }
 
