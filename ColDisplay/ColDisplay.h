@@ -1,31 +1,56 @@
-#ifndef __ROW_DISPLAY_H__
-#define __ROW_DISPLAY_H__
+#ifndef __COL_DISPLAY_H__
+#define __COL_DISPLAY_H__
 
 #include <Vector.h>
 
-const static int MAX_WIDTH = 4;  //BYTES
+const static int MAX_WIDTH = 16;  //BYTES
 const static int MAX_HEIGHT = 8; //LEDS
 
 
 class ColDisplay{
   private:
     byte displayBuffer[MAX_HEIGHT][MAX_WIDTH];
-    int pixelHeight = MAX_HEIGHT; //Number of leds verticaly 
+    int pixelHeight = MAX_HEIGHT; //Number of leds verticaly
+    int pixelWidth = MAX_WIDTH * 8;
     int viewWidthNumBytes = MAX_WIDTH; //Number of bytes in view
+    int currentCol = 0;
+    byte retCol[(MAX_HEIGHT/8)+1];
+    int* leds;
       
   public:
 
     ColDisplay (){
       fillBuffer(0b00000000);
     }
-    
+
+    byte* getCol (int x);
+    bool getPixel (int x, int y);
     void updateLoop ();
     void printDisplay();
     void setPixel (int x, int y, bool val);
     void fillBuffer (byte val);
     void fillView ();
     void setBytes (int x, int y, byte* val, int height, int width);
+    void displayNextCol ();
+
+    int getPixelHeight (){return pixelHeight;}
+    int getPixelWidth() {return pixelWidth;}
+
+    void setPixelWidth (int width) {pixelWidth = width;}
+    void setPixelHeight (int height) {pixelWidth = height;}
+    void setLeds (int* leds){this->leds = leds;}
 };
+
+void ColDisplay::displayNextCol (){
+  for (int y = 0; y <pixelHeight;y++){
+    digitalWrite (leds[y],getPixel(currentCol,y));
+  }
+
+  //Serial.println(currentCol);
+  if (currentCol++ >= ((MAX_WIDTH)*8)-1){
+    currentCol = 0;
+  }
+}
 
 
 void ColDisplay::setBytes (int x, int y, byte* val, int height, int width){
@@ -72,6 +97,27 @@ void ColDisplay::fillBuffer (byte val){
         }
       }
 
+}
+
+bool ColDisplay::getPixel (int x, int y){
+  if( x < 0 || (x/8) > MAX_WIDTH || y < 0 || y > MAX_HEIGHT-1){
+    return false;
+  }
+  return bitRead(displayBuffer[y][(x/8)],(8-(x%8))-1);
+  
+}
+
+byte* ColDisplay::getCol (int x){
+  if( x < 0 || (x/8) > MAX_WIDTH ){
+    return NULL;
+  }
+
+  for (int y = 0; y < pixelHeight; y++){
+    retCol[y] = getPixel(x,y);
+  }
+
+  return retCol;
+   
 }
 void ColDisplay::setPixel (int x, int y, bool val){
   if( x < 0 || (x/8) > MAX_WIDTH || y < 0 || y > MAX_HEIGHT-1){
