@@ -1,9 +1,14 @@
 #include "ColDisplay.h"
+#include "ColEngine.h"
+#include "ColWord.h"
+
 #include <arduino-timer.h>
 
 Timer<10, micros> timer;
 
 ColDisplay colDisplay;
+ColWord colWord;
+ColEngine colEngine;
 
 float wav1[3];//0 frequency, 1 unscaled amplitude, 2 is final amplitude
 int average;
@@ -45,11 +50,21 @@ bool updateCol (void* argument){
   return true;
 }
 void setup() {
+  Serial.begin(115200);
+  colEngine.setColDisplay(&colDisplay);
+  colEngine.addDisplayObject(&colWord);
+  
+  colWord.setWord((char*)"ABC$\0");
+  colWord.printDisplay();
+
+  
+  int leds[8] = {9,8,7,6,5,4,3,2};
+  colDisplay.setLeds((int*)leds);
+
   
   //configureTimer();
-  Serial.begin(115200);
-  //colDisplay.printDisplay();
-
+  
+  colDisplay.printDisplay();
 
   wav1[0] = 200; //frequency of the sine wave
   wav1[1] =2.5; // 0V - 2.5V amplitude (Max amplitude + offset) value must not exceed the "maxOutputScale"
@@ -63,16 +78,16 @@ void setup() {
   pinMode (7, OUTPUT);
   pinMode (8, OUTPUT);
   pinMode (9, OUTPUT);
-  int leds[8] = {9,8,7,6,5,4,3,2};
-  colDisplay.setLeds((int*)leds);
-  //colDisplay.setPixelWidth(32);
-
-  float pixelTimeStep = ((1/rotFreq)*1000000)/colDisplay.getPixelWidth();
-  Serial.print("pixelTimeStep: ");
-  Serial.println(pixelTimeStep);
-  
-  timer.every(pixelTimeStep,updateCol);
-  makeWave(NULL);
+//  int leds[8] = {9,8,7,6,5,4,3,2};
+//  colDisplay.setLeds((int*)leds);
+//  //colDisplay.setPixelWidth(32);
+//
+//  float pixelTimeStep = ((1/rotFreq)*1000000)/colDisplay.getPixelWidth();
+//  Serial.print("pixelTimeStep: ");
+//  Serial.println(pixelTimeStep);
+//  
+//  timer.every(pixelTimeStep,updateCol);
+//  makeWave(NULL);
 //
 //  colDisplay.setPixel(5,2,true);
 //  for (int y = 0; y < 4; y ++){
@@ -89,17 +104,17 @@ void setup() {
 //  }
   
   // A
-//  byte letter[][2] = 
-//    {
-//      {0b01110000,0b11111111},
-//      {0b10001000,0b11110001},
-//      {0b10001000,0b11110001},
-//      {0b11111000,0b11110001},
-//      {0b10001000,0b11110001},
-//      {0b10001000,0b11110001},
-//      {0b10001000,0b11110001},
-//      {0b00000000,0b11111111}
-//    };
+  byte letter[][2] = 
+    {
+      {0b01110000,0b11111111},
+      {0b10001000,0b11110001},
+      {0b10001000,0b11110001},
+      {0b11111000,0b11110001},
+      {0b10001000,0b11110001},
+      {0b10001000,0b11110001},
+      {0b10001000,0b11110001},
+      {0b00000000,0b11111111}
+    };
 //byte letter[][2] = 
 //    {
 //      {0b11111111,0b00000000},
@@ -111,8 +126,8 @@ void setup() {
 //      {0b11111111,0b00000000},
 //      {0b11111111,0b00000000}
 //    };
-//    colDisplay.setBytes(0,0,(byte*)letter,8,2);
-////
+   colDisplay.setBytes(0,0,(byte*)letter,8,2);
+//
 //    for(int i = 0; i < 8;i++){
 //      colDisplay.fillBuffer(0b00000000);
 //      colDisplay.setBytes (i,0,(byte*)letter,8,2);
@@ -121,7 +136,7 @@ void setup() {
 // 
 //
 //    colDisplay.setPixel (0,0,true);
-//    colDisplay.printDisplay();
+    colDisplay.printDisplay();
 
 
 
@@ -158,7 +173,12 @@ boolean makeWave (void* arugment){
   
 }
 void loop() {
-  timer.tick();
+  //timer.tick();
+  colEngine.tick();
+  colDisplay.printDisplay();
+  //delay(500);
+
+
 
 //  
 //  
