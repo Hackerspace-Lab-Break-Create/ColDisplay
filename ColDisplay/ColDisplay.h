@@ -4,7 +4,7 @@
 
 class ColDisplay{
   private:
-    const static int MAX_WIDTH = 8;  //BYTES
+    const static int MAX_WIDTH = 16;  //BYTES
     const static int MAX_HEIGHT = 8; //LEDS
 
     byte displayBuffer[MAX_HEIGHT][MAX_WIDTH];

@@ -2,7 +2,7 @@
 #define _COL_WORD_
 #include "ColDisplayObject.h"
 #include "PovAlphabet8x8.h"
-#include <Vector.h>
+
 
 
 class ColWord: public ColDisplayObject {
