@@ -7,8 +7,6 @@
 
 class ColWord: public ColDisplayObject {
   private:
-    const static int MAX_LETTERS = 5;  //BYTES
-    const static int MAX_HEIGHT = 8; //LEDS
     
     byte letterBuffer[MAX_HEIGHT][MAX_LETTERS];  
     int numOfLetters=0;

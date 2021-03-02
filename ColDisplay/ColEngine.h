@@ -20,6 +20,8 @@ class ColEngine {
 
     unsigned long tickCount = 0;
 
+    void (*displayCallback) ();
+
   public:
 
     ColEngine () {
@@ -38,13 +40,16 @@ class ColEngine {
     }
     void tick ();
 
+    void setDisplayCallback (void (*fCallback)()){ displayCallback = fCallback;}
+
 
 };
 
 
 void ColEngine::tick () {
 
-  colDisplay->displayNextCol();
+  //colDisplay->displayNextCol();
+  displayCallback ();
 
   if (tickCount % (colDisplay->getPixelWidth()*2) == 0) {
     colDisplay->clearBuffer();

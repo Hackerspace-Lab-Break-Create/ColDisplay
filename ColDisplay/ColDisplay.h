@@ -4,16 +4,12 @@
 
 class ColDisplay{
   private:
-    const static int MAX_WIDTH = 16;  //BYTES
-    const static int MAX_HEIGHT = 8; //LEDS
-
     byte displayBuffer[MAX_HEIGHT][MAX_WIDTH];
     int pixelHeight = MAX_HEIGHT; //Number of leds verticaly
     int pixelWidth = MAX_WIDTH * 4;
     int viewWidthNumBytes = MAX_WIDTH; //Number of bytes in view
     int currentCol = 0;
-    byte retCol[(MAX_HEIGHT/8)+1];
-    int* leds;
+    byte retCol[MAX_HEIGHT];
       
   public:
 
@@ -22,6 +18,8 @@ class ColDisplay{
     }
 
     byte* getCol (int x);
+    byte* getNextCol();
+    
     bool getPixel (int x, int y);
     void updateLoop ();
     void printDisplay();
@@ -29,7 +27,6 @@ class ColDisplay{
     void fillBuffer (byte val);
 
     void setBytes (int x, int y, byte* val, int height, int width);
-    void displayNextCol ();
 
     int getPixelHeight (){return pixelHeight;}
     int getPixelWidth() {return pixelWidth;}
@@ -37,20 +34,9 @@ class ColDisplay{
     void setPixelWidth (int width) {pixelWidth = width;}
     void setPixelHeight (int height) {pixelWidth = height;}
     void clearBuffer (){fillBuffer(0b00000000);}
-    
-    void setLeds (int* leds){this->leds = leds;}
 };
 
-void ColDisplay::displayNextCol (){
-  for (int y = 0; y <pixelHeight;y++){
-    digitalWrite (leds[y],getPixel(currentCol,y));
-  }
 
-  //Serial.println(currentCol);
-  if (currentCol++ >= ((MAX_WIDTH)*8)-1){
-    currentCol = 0;
-  }
-}
 
 
 void ColDisplay::setBytes (int x, int y, byte* val, int height, int width){
@@ -128,6 +114,19 @@ byte* ColDisplay::getCol (int x){
     retCol[y] = getPixel(x,y);
   }
 
+  return retCol;
+   
+}
+
+byte* ColDisplay::getNextCol (){
+  for (int y = 0; y < pixelHeight; y++){
+    retCol[y] = getPixel(currentCol,y);
+  }
+
+  //Serial.println(currentCol);
+  if (currentCol++ >= ((MAX_WIDTH)*8)-1){
+    currentCol = 0;
+  }
   return retCol;
    
 }
